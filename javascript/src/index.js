@@ -1,5 +1,4 @@
 import App from './components/App';
-import './style.css';
 
 const btn = document.getElementById('myButton');
 
