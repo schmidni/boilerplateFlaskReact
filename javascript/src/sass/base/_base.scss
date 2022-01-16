@@ -14,3 +14,10 @@ html {
 body {
     box-sizing: border-box;
 }
+
+.background {
+    background-image: url("../images/image.png");
+    background-size: cover;
+    height: 200px;
+    width: 200px;
+}

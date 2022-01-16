@@ -1,44 +1,38 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true
-  },
-  "extends": [
-    "airbnb",
-    "prettier"
-  ],
-  "parser": "@babel/eslint-parser",
-  "parserOptions": {
-    "ecmaVersion": 2021,
-    "babelOptions": {
-      "configFile": "./babel.config.json"
+    "env": {
+        "browser": true,
+        "es2021": true
     },
-    "sourceType": "module"
-  },
-  "plugins": [
-    "prettier"
-  ],
-  "rules": {
-    "max-len": [
-      "error",
-      {
-        "code": 100
-      }
-    ],
-    "prefer-promise-reject-errors": [
-      "off"
-    ],
-    "no-return-assign": [
-      "off"
-    ],
-    "prettier/prettier": [
-      "error",
-      {
-        "trailingComma": "es5",
-        "singleQuote": true,
-        "printWidth": 120,
-        "tabWidth": 4
-      }
-    ]
-  }
+    "extends": ["airbnb", "prettier"],
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+        "ecmaVersion": 2021,
+        "babelOptions": {
+            "root": "."
+        },
+        "sourceType": "module"
+    },
+    "plugins": ["prettier"],
+    "rules": {
+        "max-len": [
+            "error",
+            {
+                "code": 100
+            }
+        ],
+        "prefer-promise-reject-errors": ["off"],
+        "no-return-assign": ["off"],
+        "no-unused-expressions": ["error", { "allowTernary": true }],
+        "no-param-reassign": ["off"],
+        "prefer-const": ["off"],
+        "prettier/prettier": [
+            "error",
+            {
+                "trailingComma": "es5",
+                "singleQuote": true,
+                "printWidth": 100,
+                "tabWidth": 4
+            }
+        ]
+    }
 }
