@@ -5,7 +5,7 @@ import injectSVG from './utils';
 
 export default class App {
     constructor(element) {
-        this.ENDPOINT = process.env.API_URL;
+        this.ENDPOINT = process.env.API_URL || 'https://jsonplaceholder.typicode.com/users';
 
         element.addEventListener('click', () => {
             this.getUsers().then((data) => {
