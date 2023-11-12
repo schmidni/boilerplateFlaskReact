@@ -1,8 +1,11 @@
-import 'whatwg-fetch';
+import jsImage from '../../images/js_image.jpg';
+import svgImage from '../../images/icon.svg';
+import rawImage from '../../images/raw_image.svg?rawSVG'; // eslint-disable-line
+import injectSVG from './utils';
 
 export default class App {
     constructor(element) {
-        this.ENDPOINT = 'https://jsonplaceholder.typicode.com/users/';
+        this.ENDPOINT = process.env.API_URL;
 
         element.addEventListener('click', () => {
             this.getUsers().then((data) => {
@@ -13,7 +16,20 @@ export default class App {
                 element.insertAdjacentHTML('afterend', chld);
             });
         });
+
+        const image = `<img width="100" src="${jsImage}" alt="js image" />`;
+        element.insertAdjacentHTML('afterend', image);
+
+        let div = document.createElement('div');
+        element.insertAdjacentElement('afterend', div);
+        injectSVG(svgImage, div);
+
+        let rawdiv = document.createElement('div');
+        rawdiv.innerHTML = rawImage;
+        element.insertAdjacentElement('afterend', rawdiv);
     }
+
+    static myvar = 1;
 
     getUsers = () =>
         fetch(this.ENDPOINT)

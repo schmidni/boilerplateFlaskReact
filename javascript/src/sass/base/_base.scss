@@ -16,8 +16,13 @@ body {
 }
 
 .background {
-    background-image: url("../images/image.png");
+    background-image: url('../images/css_image.png');
     background-size: cover;
     height: 200px;
     width: 200px;
+}
+
+svg {
+    width: 150px;
+    height: 150px;
 }

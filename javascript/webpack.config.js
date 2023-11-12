@@ -1,10 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin').default;
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const WebpackBundleAnalyzer = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
@@ -19,13 +18,12 @@ const htmlPluginEntries = templateFiles.map(
         new HTMLWebpackPlugin({
             inject: 'body',
             hash: true,
-            scriptLoading: 'blocking',
             filename: template,
             template: path.resolve(__dirname, 'src/', template),
         })
 );
 
-module.exports = {
+module.exports = (env) => ({
     entry: {
         index: [
             path.resolve(__dirname, 'src/js', 'index.js'),
@@ -33,7 +31,7 @@ module.exports = {
         ],
     },
 
-    mode: process.env.NODE_ENV,
+    mode: env.production ? 'production' : 'development',
 
     // default output folder. Possibly overwritten in subconfig
     output: {
@@ -65,27 +63,34 @@ module.exports = {
                         loader: 'postcss-loader', // postprocessing css
                         options: {
                             postcssOptions: {
-                                plugins: [
-                                    [
-                                        'autoprefixer',
-                                        {
-                                            // Options
-                                        },
-                                    ],
-                                ],
+                                plugins: [['postcss-preset-env']],
                             },
                         },
                     },
-                    { loader: 'sass-loader', options: { sourceMap: true } }, // sass files loader
+                    'sass-loader', // sass files loader
                 ],
             },
             {
-                test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                test: /\.(png|jpg|jpeg|gif)$/i,
                 type: 'asset/resource',
                 generator: {
-                    // emit: false,
                     filename: 'images/[name][ext][query]',
                 },
+            },
+            {
+                test: /.svg$/,
+                type: 'asset', // inline if < 10kb, else resource
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 10 * 1024,
+                    },
+                },
+                use: 'svgo-loader',
+            },
+            {
+                resourceQuery: /rawSVG/,
+                type: 'asset/source',
+                use: 'svgo-loader',
             },
             {
                 test: /\.(woff|woff2|eot|ttf|otf)$/i,
@@ -94,69 +99,49 @@ module.exports = {
                     filename: 'fonts/[name][ext][query]',
                 },
             },
+            {
+                test: /\.(csv)$/i,
+                use: ['csv-loader'],
+            },
+            {
+                test: /\.html$/i,
+                loader: 'html-loader',
+            },
         ],
     },
 
     target: 'web',
-    devtool: 'eval-source-map',
+    devtool: env.production ? 'eval-source-map' : 'source-map',
 
     /* Development Server Configuration */
     devServer: {
         static: {
-            directory: path.resolve(__dirname, '../dist'),
-            publicPath: '/',
-            watch: true,
+            directory: path.resolve(__dirname, 'dist'),
         },
-        client: {
-            overlay: true,
-        },
-        open: true,
-        compress: true,
-        hot: false,
+        watchFiles: ['src/**/*'],
+        open: false,
+        hot: true,
         host: '127.0.0.1',
         port: 5000,
-    },
-
-    /* File watcher options */
-    watchOptions: {
-        aggregateTimeout: 300,
-        poll: 300,
-        ignored: /node_modules/,
     },
 
     /* Optimization configuration */
     optimization: {
         minimize: true,
-        minimizer: [
-            new TerserPlugin({
-                parallel: true,
-            }),
-            new CssMinimizerPlugin(),
-        ],
+        minimizer: [new CssMinimizerPlugin()],
     },
 
     /* Performance treshold configuration values */
     performance: {
-        maxEntrypointSize: 512000,
-        maxAssetSize: 512000,
+        maxEntrypointSize: 500 * 1024,
+        maxAssetSize: 800 * 1024,
     },
 
     plugins: [
         new WebpackBundleAnalyzer(),
         new MiniCssExtractPlugin({
-            filename: 'css/style.css',
+            filename: 'css/[name].css',
         }),
-        new CopyWebpackPlugin({
-            patterns: [
-                {
-                    from: path.resolve('src', 'images'),
-                    to: path.resolve('dist', 'images'),
-                    toType: 'dir',
-                    globOptions: {
-                        ignore: ['*.DS_Store', 'Thumbs.db'],
-                    },
-                },
-            ],
-        }),
+        new Dotenv(),
     ].concat(htmlPluginEntries),
-};
+});
