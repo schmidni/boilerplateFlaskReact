@@ -1,7 +1,9 @@
 import jsImage from '../../images/js_image.jpg';
 import svgImage from '../../images/icon.svg';
 import rawImage from '../../images/raw_image.svg?rawSVG'; // eslint-disable-line
-import injectSVG from './utils';
+import { injectSVG, importFolder } from './utils';
+
+const batch = importFolder(require.context('../../images/batch', false, /\.(png|jpe?g|svg)$/));
 
 export default class App {
     constructor(element) {
@@ -27,6 +29,9 @@ export default class App {
         let rawdiv = document.createElement('div');
         rawdiv.innerHTML = rawImage;
         element.insertAdjacentElement('afterend', rawdiv);
+
+        const batch1 = `<img width="100" src="${batch['TI.png']}" alt="js image" />`;
+        element.insertAdjacentHTML('afterend', batch1);
     }
 
     static myvar = 1;

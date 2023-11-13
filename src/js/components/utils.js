@@ -1,4 +1,4 @@
-export default function injectSVG(path, element) {
+export function injectSVG(path, element) {
     // Inject an SVG file into an element
 
     const xhr = new XMLHttpRequest();
@@ -10,4 +10,8 @@ export default function injectSVG(path, element) {
         }
     };
     xhr.send();
+}
+
+export function importFolder(r) {
+    return Object.fromEntries(r.keys().map((x) => [x.replace('./', ''), r(x)]));
 }
